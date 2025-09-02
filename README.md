@@ -5,7 +5,7 @@ Marketing analytics platform with top LLM reasoning (upgrading based on new intr
  For Influencers
 - Exclusive Membership: Curated network with 10k+ follower requirement
 - AI-Powered Vetting: Automated fake follower detection and engagement analysis
-- Weekly Allowances: Dynamic credit limits based on follower count ($500-$4000/week)
+- Weekly Allowances: Dynamic credit limits based on follower count 
 - Premium Experiences: Access to exclusive offers from Silicon Valley's top brands
 - Real-time Instagram Integration: Automatic profile data fetching via RocketAPI
 
@@ -155,11 +155,11 @@ The platform is pre-configured for these Silicon Valley locations:
 
  Weekly Allowance Tiers
 Influencer allowances are automatically calculated based on follower count:
-- 500,000+ followers: $4,000/week
-- 100,000+ followers: $2,500/week
-- 50,000+ followers: $1,500/week
-- 10,000+ followers: $1,000/week
-- Under 10,000: $500/week
+- 500,000+ followers: 4,000/week
+- 100,000+ followers: 2,500/week
+- 50,000+ followers: 1,500/week
+- 10,000+ followers: 1,000/week
+- Under 10,000: 500/week
 
  📱 User Workflows
 
