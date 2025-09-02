@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}hAIpClub - Elite Influencer Network{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Ultra-futuristic full-screen video background */
+.hero-video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.hero-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translateX(-50%) translateY(-50%);
+  filter: brightness(0.4) contrast(1.3) saturate(1.2);
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(ellipse at center top, transparent 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.8) 100%),
+    linear-gradient(135deg, rgba(33, 150, 243, 0.08) 0%, rgba(156, 39, 176, 0.08) 100%),
+    rgba(0, 0, 0, 0.4);
+}
+
+/* Hero section */
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.hero-content {
+  max-width: 800px;
+  z-index: 1;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 100;
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.8) 50%, rgba(33, 150, 243, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInUp 1s ease-out 0.2s both;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 200;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 3rem;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  animation: fadeInUp 1s ease-out 0.4s both;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 3rem;
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.8) 0%, rgba(156, 39, 176, 0.8) 100%);
+  border: none;
+  border-radius: 50px;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: fadeInUp 1s ease-out 0.6s both;
+}
+
+.hero-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.8s ease;
+}
+
+.hero-cta:hover::before {
+  left: 100%;
+}
+
+.hero-cta:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 20px 60px rgba(33, 150, 243, 0.4);
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.9) 0%, rgba(156, 39, 176, 0.9) 100%);
+}
+
+/* Stats section */
+.stats-section {
+  position: relative;
+  padding: 6rem 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 3rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-item:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(33, 150, 243, 0.3);
+  box-shadow: 0 20px 60px rgba(33, 150, 243, 0.1);
+}
+
+.stat-number {
+  font-size: 3.5rem;
+  font-weight: 100;
+  line-height: 1;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.9) 0%, rgba(156, 39, 176, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 1rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.02em;
+}
+
+/* Floating elements */
+.floating-elements {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.floating-element {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(33, 150, 243, 0.3);
+  border-radius: 50%;
+  animation: float 15s infinite linear;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(100vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh) translateX(200px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+  
+  .stats-section {
+    padding: 4rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Full-screen video background -->
+<div class="hero-video-container">
+  <video class="hero-video" autoplay muted loop playsinline>
+    <source src="{% static 'videos/123.mp4' %}" type="video/mp4">
+    <!-- Fallback: Luxury restaurant with models -->
+    <source src="https://assets.mixkit.co/videos/preview/mixkit-elegant-restaurant-interior-with-soft-lighting-4056-large.mp4" type="video/mp4">
+    <!-- Additional fallback -->
+    <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-walking-in-an-elegant-restaurant-4057-large.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+</div>
+
+<!-- Floating elements -->
+<div class="floating-elements">
+  <div class="floating-element" style="left: 5%; animation-delay: 0s;"></div>
+  <div class="floating-element" style="left: 15%; animation-delay: 3s;"></div>
+  <div class="floating-element" style="left: 25%; animation-delay: 6s;"></div>
+  <div class="floating-element" style="left: 35%; animation-delay: 9s;"></div>
+  <div class="floating-element" style="left: 45%; animation-delay: 12s;"></div>
+  <div class="floating-element" style="left: 55%; animation-delay: 2s;"></div>
+  <div class="floating-element" style="left: 65%; animation-delay: 5s;"></div>
+  <div class="floating-element" style="left: 75%; animation-delay: 8s;"></div>
+  <div class="floating-element" style="left: 85%; animation-delay: 11s;"></div>
+  <div class="floating-element" style="left: 95%; animation-delay: 14s;"></div>
+</div>
+
+<!-- Hero section -->
+<section class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">Elite Influencer Network</h1>
+    <p class="hero-subtitle">Connect with premium brands through AI-powered matching and exclusive experiences</p>
+    <a href="{% url 'core:influencer_waitlist' %}" class="hero-cta">
+      <span>Access Elite Network</span>
+    </a>
+  </div>
+</section>
+
+<!-- Stats section -->
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-number">500+</div>
+      <div class="stat-label">Elite Influencers</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">50+</div>
+      <div class="stat-label">Premium Venues</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">$2M+</div>
+      <div class="stat-label">Credit Distributed</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">98%</div>
+      <div class="stat-label">Satisfaction Rate</div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Create additional floating elements dynamically
+  function createFloatingElement() {
+    const element = document.createElement('div');
+    element.className = 'floating-element';
+    element.style.left = Math.random() * 100 + '%';
+    element.style.animationDelay = Math.random() * 15 + 's';
+    element.style.animationDuration = (Math.random() * 10 + 10) + 's';
+    
+    // Random size variation
+    const size = Math.random() * 3 + 2;
+    element.style.width = size + 'px';
+    element.style.height = size + 'px';
+    
+    // Random opacity
+    element.style.opacity = Math.random() * 0.4 + 0.1;
+    
+    document.querySelector('.floating-elements').appendChild(element);
+    
+    // Remove element after animation
+    setTimeout(() => {
+      element.remove();
+    }, 25000);
+  }
+  
+  // Create floating elements periodically
+  setInterval(createFloatingElement, 2000);
+  
+  // Parallax effect for hero content
+  window.addEventListener('scroll', function() {
+    const scrolled = window.pageYOffset;
+    const heroContent = document.querySelector('.hero-content');
+    if (heroContent) {
+      heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
+    }
+  });
+  
+  // Navigation scroll effect
+  window.addEventListener('scroll', function() {
+    const nav = document.querySelector('.futuristic-nav');
+    if (window.scrollY > 50) {
+      nav.style.background = 'rgba(0, 0, 0, 0.8)';
+      nav.style.borderBottomColor = 'rgba(255, 255, 255, 0.2)';
+    } else {
+      nav.style.background = 'rgba(0, 0, 0, 0.1)';
+      nav.style.borderBottomColor = 'rgba(255, 255, 255, 0.1)';
+    }
+  });
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Join as Brand - hAIpClub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-gold">
+                <div class="card-header text-center">
+                    <h2 class="text-gold mb-0">
+                        <i class="bi bi-building"></i> Join as Brand
+                    </h2>
+                    <p class="text-muted mt-2">Partner with Silicon Valley's top influencers</p>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Benefits Info -->
+                    <div class="alert alert-info mb-4">
+                        <h6><i class="bi bi-star"></i> Partnership Benefits</h6>
+                        <ul class="mb-0">
+                            <li>Access to verified influencers with 10k+ followers</li>
+                            <li>AI-powered content quality assurance</li>
+                            <li>Secure digital redemption system</li>
+                            <li>Performance tracking and analytics</li>
+                        </ul>
+                    </div>
+
+                    <form method="post" id="brand-registration-form">
+                        {% csrf_token %}
+                        
+                        <!-- Contact Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-gold border-bottom border-warning pb-2 mb-3">
+                                    <i class="bi bi-person-badge"></i> Contact Information
+                                </h5>
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.first_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.last_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.username|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.email|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Business Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-gold border-bottom border-warning pb-2 mb-3">
+                                    <i class="bi bi-building"></i> Business Information
+                                </h5>
+                            </div>
+                            <div class="col-md-8">
+                                {{ form.business_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.category|as_crispy_field }}
+                            </div>
+                            <div class="col-md-8">
+                                {{ form.address|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.city|as_crispy_field }}
+                            </div>
+                            <div class="col-12">
+                                {{ form.description|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Contact Details -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-gold border-bottom border-warning pb-2 mb-3">
+                                    <i class="bi bi-telephone"></i> Contact Details
+                                </h5>
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.website|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.phone_number|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.instagram_handle|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-gold border-bottom border-warning pb-2 mb-3">
+                                    <i class="bi bi-shield-lock"></i> Account Security
+                                </h5>
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.password1|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.password2|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Terms & Submit -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="terms-check" required>
+                                    <label class="form-check-label" for="terms-check">
+                                        I agree to the <a href="#" class="text-gold">Terms of Service</a>, 
+                                        <a href="#" class="text-gold">Privacy Policy</a>, and 
+                                        <a href="#" class="text-gold">Brand Partnership Agreement</a>
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="marketing-check">
+                                    <label class="form-check-label" for="marketing-check">
+                                        I would like to receive marketing communications and platform updates
+                                    </label>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-send"></i> Create Brand Account
+                                    </button>
+                                    <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left"></i> Back to Home
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Already have account -->
+            <div class="text-center mt-4">
+                <p class="text-muted">
+                    Already have an account? 
+                    <a href="{% url 'account_login' %}" class="text-gold">Sign in here</a>
+                </p>
+            </div>
+            
+            <!-- Partnership Info -->
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-people display-4 text-gold mb-3"></i>
+                            <h6>Verified Creators</h6>
+                            <p class="text-muted small">Access to our curated network of authentic influencers with 10k+ followers</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-robot display-4 text-gold mb-3"></i>
+                            <h6>AI Quality Control</h6>
+                            <p class="text-muted small">Automated content analysis ensures brand safety and quality standards</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-graph-up display-4 text-gold mb-3"></i>
+                            <h6>Performance Tracking</h6>
+                            <p class="text-muted small">Monitor campaign success with detailed analytics and engagement metrics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('brand-registration-form');
+    const businessNameInput = document.getElementById('id_business_name');
+    const categorySelect = document.getElementById('id_category');
+    
+    // Auto-generate suggestions based on business type
+    if (categorySelect && businessNameInput) {
+        categorySelect.addEventListener('change', function() {
+            const category = this.value;
+            const businessName = businessNameInput.value;
+            
+            if (category && !businessName) {
+                // Provide helpful placeholder based on category
+                const placeholders = {
+                    'restaurant': 'e.g., Bella Vista Restaurant',
+                    'spa': 'e.g., Serenity Spa & Wellness',
+                    'fitness': 'e.g., FitLife Gym',
+                    'retail': 'e.g., Urban Style Boutique',
+                    'beauty': 'e.g., Glamour Beauty Salon',
+                    'entertainment': 'e.g., StarLight Entertainment',
+                    'tech': 'e.g., TechHub Store',
+                    'other': 'Your business name'
+                };
+                
+                businessNameInput.placeholder = placeholders[category] || 'Your business name';
+            }
+        });
+    }
+    
+    // Form validation
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const termsCheck = document.getElementById('terms-check');
+            
+            if (!termsCheck.checked) {
+                e.preventDefault();
+                showAlert('Please accept the Terms of Service to continue.', 'warning');
+                return false;
+            }
+            
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Creating Account...';
+            }
+        });
+    }
+    
+    function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.maxWidth = '400px';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+});
+</script>
+{% endblock %} 

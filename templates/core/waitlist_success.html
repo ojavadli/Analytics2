@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Application Submitted - hAIpClub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-gold">
+                <div class="card-body text-center">
+                    <div class="success-icon mb-4">
+                        <i class="bi bi-check-circle display-1 text-success"></i>
+                    </div>
+                    
+                    <h2 class="text-gold mb-3">Application Submitted Successfully!</h2>
+                    <p class="lead text-muted mb-4">
+                        Thank you for applying to hAIpClub. We are now analyzing your Instagram profile 
+                        and followers using our advanced AI technology.
+                    </p>
+                    
+                    <div class="alert alert-info mb-4">
+                        <h6><i class="bi bi-info-circle"></i> What's Happening Now</h6>
+                        <ul class="text-start mb-0">
+                            <li><strong>Comprehensive Analysis:</strong> We are analyzing up to 500 of your followers</li>
+                            <li><strong>Location Mapping:</strong> Identifying Bay Area audience across 24+ cities</li>
+                            <li><strong>Authenticity Check:</strong> AI-powered fake follower detection</li>
+                            <li><strong>Engagement Analysis:</strong> Quality and interaction rate assessment</li>
+                            <li><strong>Demographics:</strong> Gender and geographic breakdown</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <i class="bi bi-robot display-4 text-gold mb-2"></i>
+                                <h6>AI Analysis</h6>
+                                <small class="text-muted">Advanced follower screening</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <i class="bi bi-geo-alt display-4 text-gold mb-2"></i>
+                                <h6>Location Mapping</h6>
+                                <small class="text-muted">Silicon Valley focus</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <i class="bi bi-people display-4 text-gold mb-2"></i>
+                                <h6>Demographics</h6>
+                                <small class="text-muted">Audience insights</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="next-steps mb-4">
+                        <h5 class="text-gold mb-3">What Happens Next?</h5>
+                        <div class="timeline-horizontal">
+                            <div class="timeline-step active">
+                                <div class="step-icon">1</div>
+                                <div class="step-label">Analysis Complete</div>
+                                <div class="step-desc">AI processes your data</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="step-icon">2</div>
+                                <div class="step-label">hAIpClub Review</div>
+                                <div class="step-desc">Manual evaluation</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="step-icon">3</div>
+                                <div class="step-label">Decision</div>
+                                <div class="step-desc">Approval notification</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning mb-4">
+                        <h6><i class="bi bi-clock-history"></i> Timeline</h6>
+                        <p class="mb-0">
+                            <strong>Analysis:</strong> Complete within 24 hours<br>
+                            <strong>Review:</strong> 2-5 business days<br>
+                            <strong>Decision:</strong> You will be notified via email (if provided)
+                        </p>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-house"></i> Back to Home
+                        </a>
+                        <a href="{% url 'core:venue_signup' %}" class="btn btn-outline-gold btn-lg">
+                            <i class="bi bi-building"></i> Partner as Venue
+                        </a>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-top">
+                        <h6 class="text-gold mb-3">Questions?</h6>
+                        <p class="text-muted mb-0">
+                            Contact us at <a href="mailto:hello@haipclub.com" class="text-gold">hello@haipclub.com</a> 
+                            or follow us on social media for updates.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.success-icon {
+    animation: bounce 1s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 20%, 60%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px);
+    }
+    80% {
+        transform: translateY(-10px);
+    }
+}
+
+.stat-card {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 15px;
+    padding: 2rem 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--gold);
+    box-shadow: 0 10px 30px rgba(255, 193, 7, 0.2);
+}
+
+.timeline-horizontal {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    margin: 2rem 0;
+}
+
+.timeline-horizontal::before {
+    content: '';
+    position: absolute;
+    top: 2rem;
+    left: 16.67%;
+    right: 16.67%;
+    height: 2px;
+    background: var(--bs-border-color);
+    z-index: 1;
+}
+
+.timeline-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-step.active .step-icon {
+    background: var(--gold);
+    color: var(--bs-dark);
+}
+
+.timeline-step.active::before {
+    content: '';
+    position: absolute;
+    top: 2rem;
+    left: -50%;
+    width: 50%;
+    height: 2px;
+    background: var(--gold);
+    z-index: 1;
+}
+
+.step-icon {
+    width: 4rem;
+    height: 4rem;
+    background: var(--bs-secondary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0 auto 1rem;
+    position: relative;
+    z-index: 3;
+}
+
+.step-label {
+    font-weight: bold;
+    color: var(--bs-body-color);
+    margin-bottom: 0.5rem;
+}
+
+.step-desc {
+    font-size: 0.9rem;
+    color: var(--bs-secondary);
+}
+
+@media (max-width: 768px) {
+    .timeline-horizontal {
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .timeline-horizontal::before {
+        display: none;
+    }
+    
+    .timeline-step.active::before {
+        display: none;
+    }
+}
+</style>
+{% endblock %} 

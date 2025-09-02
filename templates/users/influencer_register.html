@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Join as Influencer - hAIpClub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-gold">
+                <div class="card-header text-center">
+                    <h2 class="text-gold mb-0">
+                        <i class="bi bi-camera"></i> Join as Influencer
+                    </h2>
+                    <p class="text-muted mt-2">Apply to join Silicon Valley's premier influencer platform</p>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Requirements Info -->
+                    <div class="alert alert-info mb-4">
+                        <h6><i class="bi bi-info-circle"></i> Membership Requirements</h6>
+                        <ul class="mb-0">
+                            <li>Minimum 10,000 Instagram followers</li>
+                            <li>Public Instagram profile</li>
+                            <li>Active content creation (recent posts)</li>
+                            <li>Based in or willing to travel to Silicon Valley</li>
+                        </ul>
+                    </div>
+
+                    <form method="post" id="influencer-registration-form">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-gold border-bottom border-warning pb-2 mb-3">
+                                    <i class="bi bi-person"></i> Basic Information
+                                </h5>
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.first_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.last_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.username|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.email|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Instagram Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-gold border-bottom border-warning pb-2 mb-3">
+                                    <i class="bi bi-instagram"></i> Instagram Profile
+                                </h5>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    {{ form.instagram_username|as_crispy_field }}
+                                    <button type="button" class="btn btn-outline-warning" id="fetch-instagram-data">
+                                        <i class="bi bi-arrow-clockwise"></i> Fetch Data
+                                    </button>
+                                </div>
+                                <div id="instagram-loading" class="text-center mt-2" style="display: none;">
+                                    <div class="loading-spinner"></div>
+                                    <small class="text-muted">Fetching Instagram data...</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div id="profile-pic-preview" class="text-center">
+                                    <img id="profile-pic-img" src="" alt="Profile Picture" 
+                                         class="rounded-circle" style="width: 80px; height: 80px; display: none;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location & Category -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-gold border-bottom border-warning pb-2 mb-3">
+                                    <i class="bi bi-geo-alt"></i> Location & Content
+                                </h5>
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.city|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.category|as_crispy_field }}
+                            </div>
+                            <div class="col-12">
+                                {{ form.bio|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-gold border-bottom border-warning pb-2 mb-3">
+                                    <i class="bi bi-shield-lock"></i> Account Security
+                                </h5>
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.password1|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.password2|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Instagram Stats (Auto-filled) -->
+                        <div class="row mb-4" id="instagram-stats" style="display: none;">
+                            <div class="col-12">
+                                <h5 class="text-gold border-bottom border-warning pb-2 mb-3">
+                                    <i class="bi bi-graph-up"></i> Instagram Statistics
+                                </h5>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="profile-stat">
+                                    <span class="profile-stat-number" id="follower-display">0</span>
+                                    <div class="profile-stat-label">Followers</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="profile-stat">
+                                    <span class="profile-stat-number" id="following-display">0</span>
+                                    <div class="profile-stat-label">Following</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="profile-stat">
+                                    <span class="profile-stat-number" id="posts-display">0</span>
+                                    <div class="profile-stat-label">Posts</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="profile-stat">
+                                    <span class="profile-stat-number" id="engagement-display">0%</span>
+                                    <div class="profile-stat-label">Engagement</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terms & Submit -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="terms-check" required>
+                                    <label class="form-check-label" for="terms-check">
+                                        I agree to the <a href="#" class="text-gold">Terms of Service</a> and 
+                                        <a href="#" class="text-gold">Privacy Policy</a>
+                                    </label>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-send"></i> Submit Application
+                                    </button>
+                                    <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left"></i> Back to Home
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Already have account -->
+            <div class="text-center mt-4">
+                <p class="text-muted">
+                    Already have an account? 
+                    <a href="{% url 'account_login' %}" class="text-gold">Sign in here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fetchButton = document.getElementById('fetch-instagram-data');
+    const usernameInput = document.getElementById('id_instagram_username');
+    const loadingDiv = document.getElementById('instagram-loading');
+    const statsDiv = document.getElementById('instagram-stats');
+    const profileImg = document.getElementById('profile-pic-img');
+    
+    if (fetchButton && usernameInput) {
+        fetchButton.addEventListener('click', function() {
+            const username = usernameInput.value.trim();
+            if (!username) {
+                showAlert('Please enter an Instagram username first', 'warning');
+                return;
+            }
+            
+            fetchInstagramData(username);
+        });
+        
+        // Auto-fetch when username is entered (with debounce)
+        let timeout;
+        usernameInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                const username = this.value.trim();
+                if (username.length >= 3) {
+                    fetchInstagramData(username);
+                }
+            }, 2000); // 2 second delay
+        });
+    }
+    
+    function fetchInstagramData(username) {
+        if (loadingDiv) loadingDiv.style.display = 'block';
+        if (fetchButton) fetchButton.disabled = true;
+        
+        // Simulate API call (replace with actual AJAX call)
+        setTimeout(() => {
+            // Mock data for demo
+            const mockData = {
+                follower_count: Math.floor(Math.random() * 100000) + 50000,
+                following_count: Math.floor(Math.random() * 2000) + 500,
+                media_count: Math.floor(Math.random() * 500) + 100,
+                engagement_rate: (Math.random() * 5 + 1).toFixed(1),
+                profile_pic_url: 'https://via.placeholder.com/80x80/333/gold?text=' + username.charAt(0).toUpperCase()
+            };
+            
+            updateInstagramDisplay(mockData);
+            
+            if (loadingDiv) loadingDiv.style.display = 'none';
+            if (fetchButton) fetchButton.disabled = false;
+            
+            showAlert('Instagram data fetched successfully!', 'success');
+        }, 2000);
+    }
+    
+    function updateInstagramDisplay(data) {
+        document.getElementById('follower-display').textContent = formatNumber(data.follower_count);
+        document.getElementById('following-display').textContent = formatNumber(data.following_count);
+        document.getElementById('posts-display').textContent = formatNumber(data.media_count);
+        document.getElementById('engagement-display').textContent = data.engagement_rate + '%';
+        
+        if (data.profile_pic_url && profileImg) {
+            profileImg.src = data.profile_pic_url;
+            profileImg.style.display = 'block';
+        }
+        
+        if (statsDiv) {
+            statsDiv.style.display = 'block';
+        }
+        
+        // Check if meets requirements
+        if (data.follower_count >= 10000) {
+            showAlert(`Great! With ${formatNumber(data.follower_count)} followers, you meet our minimum requirements.`, 'success');
+        } else {
+            showAlert(`You currently have ${formatNumber(data.follower_count)} followers. Our minimum requirement is 10,000 followers.`, 'warning');
+        }
+    }
+    
+    function formatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
+    }
+    
+    function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.maxWidth = '400px';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+});
+</script>
+{% endblock %} 

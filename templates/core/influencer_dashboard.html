@@ -1,0 +1,655 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - {{ profile.user.first_name }} (@{{ profile.instagram_username }}){% endblock %}
+
+{% block extra_css %}
+<style>
+/* Mobile-First Dashboard Design */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+}
+
+.dashboard-container {
+  min-height: 100vh;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.dashboard-header {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+  border-radius: 50%;
+  opacity: 0.1;
+  transform: translate(30px, -30px);
+}
+
+.user-info {
+  position: relative;
+  z-index: 2;
+}
+
+.welcome-text {
+  font-size: 0.9rem;
+  color: #cccccc;
+  margin-bottom: 0.5rem;
+}
+
+.user-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.3rem;
+}
+
+.user-handle {
+  font-size: 1rem;
+  color: #FFD700;
+  margin-bottom: 1rem;
+}
+
+.tier-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: #000;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Tier-specific colors */
+.tier-bronze { background: linear-gradient(135deg, #CD7F32 0%, #B8860B 100%); color: #000; }
+.tier-silver { background: linear-gradient(135deg, #C0C0C0 0%, #A9A9A9 100%); color: #000; }
+.tier-gold { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #000; }
+.tier-elite { background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%); color: #fff; }
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FFD700;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #cccccc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* QR Code Section */
+.qr-section {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.qr-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.qr-code-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.qr-code {
+  width: 200px;
+  height: 200px;
+  border-radius: 20px;
+  border: 3px solid #FFD700;
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+  background: #ffffff;
+  padding: 10px;
+}
+
+.qr-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #000;
+  font-size: 0.8rem;
+}
+
+.qr-instructions {
+  color: #cccccc;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.regenerate-btn {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #FFD700;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.regenerate-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
+  transform: translateY(-2px);
+}
+
+/* Progress Section */
+.progress-section {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.progress-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.tier-progress {
+  margin-bottom: 2rem;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.current-xp {
+  color: #FFD700;
+  font-weight: 600;
+}
+
+.next-tier {
+  color: #cccccc;
+  font-size: 0.9rem;
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* Recent Activity */
+.activity-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.activity-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 1.5rem;
+}
+
+.activity-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.activity-icon {
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.8rem;
+  font-size: 0.8rem;
+  color: #000;
+  font-weight: 600;
+}
+
+.activity-list {
+  list-style: none;
+}
+
+.activity-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-info {
+  flex: 1;
+}
+
+.activity-name {
+  color: #ffffff;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.activity-details {
+  color: #cccccc;
+  font-size: 0.8rem;
+}
+
+.activity-value {
+  color: #FFD700;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Achievement Badges */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.achievement-badge {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.achievement-badge:hover {
+  transform: scale(1.05);
+}
+
+.badge-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.badge-name {
+  font-size: 0.7rem;
+  color: #FFD700;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Empty States */
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #888888;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .dashboard-container {
+    padding: 2rem;
+  }
+  
+  .activity-section {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .qr-code {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .activity-section {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+}
+
+.qr-code-container:hover .qr-code {
+  animation: pulse 2s infinite;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="header-bg"></div>
+    <div class="user-info">
+      <div class="welcome-text">Welcome back,</div>
+      <div class="user-name">{{ profile.user.first_name }} {{ profile.user.last_name }}</div>
+      <div class="user-handle">@{{ profile.instagram_username }}</div>
+      <div class="tier-badge tier-{{ profile.tier }}">{{ profile.get_tier_display }}</div>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">${{ profile.current_balance|floatformat:0 }}</div>
+      <div class="stat-label">Available Credit</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ profile.xp_points }}</div>
+      <div class="stat-label">XP Points</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ profile.total_redemptions }}</div>
+      <div class="stat-label">Total Visits</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ profile.streak_days }}</div>
+      <div class="stat-label">Day Streak</div>
+    </div>
+  </div>
+
+  <!-- QR Code Section -->
+  <div class="qr-section">
+    <h2 class="qr-title">Your Elite Access QR Code</h2>
+    <div class="qr-code-container">
+      {% if profile.qr_code_image %}
+        <img src="{{ profile.qr_code_image.url }}" alt="QR Code" class="qr-code">
+      {% else %}
+        <div class="qr-code" style="display: flex; align-items: center; justify-content: center; color: #000;">
+          QR Code<br>Generating...
+        </div>
+      {% endif %}
+      <div class="qr-overlay">hAI</div>
+    </div>
+    <div class="qr-instructions">
+      Show this QR code to any partner venue to redeem your dining credits instantly.
+    </div>
+    <button class="regenerate-btn" onclick="regenerateQR()">
+      🔄 Regenerate QR Code
+    </button>
+  </div>
+
+  <!-- Progress Section -->
+  <div class="progress-section">
+    <h2 class="progress-title">Tier Progress</h2>
+    <div class="tier-progress">
+      <div class="progress-info">
+        <span class="current-xp">{{ profile.xp_points }} XP</span>
+        {% if next_tier_xp %}
+          <span class="next-tier">{{ next_tier_xp }} XP to next tier</span>
+        {% else %}
+          <span class="next-tier">Elite Member ⭐</span>
+        {% endif %}
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" data-progress="{{ progress_percentage }}"></div>
+      </div>
+    </div>
+
+    <!-- Recent Achievements -->
+    {% if recent_achievements %}
+      <h3 class="activity-title">
+        <span class="activity-icon">🏆</span>
+        Recent Achievements
+      </h3>
+      <div class="achievements-grid">
+        {% for achievement in recent_achievements %}
+          <div class="achievement-badge" title="{{ achievement.description }}">
+            <div class="badge-icon">
+              {% if achievement.badge_type == 'first_signup' %}🎉
+              {% elif achievement.badge_type == 'first_redemption' %}🍽️
+              {% elif achievement.badge_type == 'tier_upgrade' %}⭐
+              {% elif achievement.badge_type == 'streak_7' %}🔥
+              {% elif achievement.badge_type == 'top_monthly' %}👑
+              {% else %}🏅
+              {% endif %}
+            </div>
+            <div class="badge-name">{{ achievement.title|truncatechars:15 }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Activity Section -->
+  <div class="activity-section">
+    <!-- Recent Redemptions -->
+    <div class="activity-card">
+      <h3 class="activity-title">
+        <span class="activity-icon">🍽️</span>
+        Recent Visits
+      </h3>
+      {% if recent_redemptions %}
+        <ul class="activity-list">
+          {% for redemption in recent_redemptions %}
+            <li class="activity-item">
+              <div class="activity-info">
+                <div class="activity-name">{{ redemption.venue.venue_name }}</div>
+                <div class="activity-details">{{ redemption.created_at|timesince }} ago</div>
+              </div>
+              <div class="activity-value">${{ redemption.amount|floatformat:0 }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-icon">🍽️</div>
+          <div>No visits yet. Show your QR code at any partner venue to get started!</div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="activity-card">
+      <h3 class="activity-title">
+        <span class="activity-icon">⚡</span>
+        Quick Actions
+      </h3>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <a href="{% url 'core:achievements' %}" style="
+          display: block;
+          background: rgba(255, 215, 0, 0.1);
+          border: 1px solid rgba(255, 215, 0, 0.2);
+          color: #FFD700;
+          padding: 1rem;
+          border-radius: 12px;
+          text-decoration: none;
+          text-align: center;
+          font-weight: 600;
+          transition: all 0.3s ease;
+        " onmouseover="this.style.background='rgba(255, 215, 0, 0.2)'" onmouseout="this.style.background='rgba(255, 215, 0, 0.1)'">
+          🏆 View All Achievements
+        </a>
+        <a href="{% url 'core:leaderboard' %}" style="
+          display: block;
+          background: rgba(255, 215, 0, 0.1);
+          border: 1px solid rgba(255, 215, 0, 0.2);
+          color: #FFD700;
+          padding: 1rem;
+          border-radius: 12px;
+          text-decoration: none;
+          text-align: center;
+          font-weight: 600;
+          transition: all 0.3s ease;
+        " onmouseover="this.style.background='rgba(255, 215, 0, 0.2)'" onmouseout="this.style.background='rgba(255, 215, 0, 0.1)'">
+          👑 View Leaderboard
+        </a>
+        <button onclick="shareProfile()" style="
+          background: rgba(255, 215, 0, 0.1);
+          border: 1px solid rgba(255, 215, 0, 0.2);
+          color: #FFD700;
+          padding: 1rem;
+          border-radius: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        " onmouseover="this.style.background='rgba(255, 215, 0, 0.2)'" onmouseout="this.style.background='rgba(255, 215, 0, 0.1)'">
+          📱 Share Profile
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Set progress bar width on page load
+document.addEventListener('DOMContentLoaded', function() {
+  const progressFill = document.querySelector('.progress-fill');
+  const progressPercentage = progressFill.getAttribute('data-progress');
+  setTimeout(() => {
+    progressFill.style.width = progressPercentage + '%';
+  }, 500);
+  
+  // Create CSRF token input if it doesn't exist
+  if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = '{{ csrf_token }}';
+    document.body.appendChild(csrfInput);
+  }
+});
+
+// QR Code Regeneration
+async function regenerateQR() {
+  try {
+    const response = await fetch('{% url "core:regenerate_qr_code" %}', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      // Reload the page to show new QR code
+      location.reload();
+    } else {
+      alert('Failed to regenerate QR code: ' + data.error);
+    }
+  } catch (error) {
+    alert('Error regenerating QR code');
+  }
+}
+
+// Share Profile Function
+function shareProfile() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'hAIpClub Elite Member',
+      text: 'Check out my hAIpClub Elite profile! 🌟',
+      url: window.location.href
+    });
+  } else {
+    // Fallback for browsers that don't support Web Share API
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      alert('Profile link copied to clipboard!');
+    });
+  }
+}
+</script>
+{% endblock %} 

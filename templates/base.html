@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}hAIpClub - Silicon Valley's Premier Creator Network{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts - Modern Professional Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="hAIpClub connects Silicon Valley's top creators with premium brands through AI-powered matching and exclusive experiences.">
+    <meta name="keywords" content="influencer marketing, silicon valley, creators, brands, AI, social media, content creators">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="hAIpClub - Silicon Valley's Premier Creator Network">
+    <meta property="og:description" content="Connect with premium brands and exclusive experiences in Silicon Valley's most exclusive creator platform.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://haipclub.com">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+</head>
+<body class="premium-dark">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 1.5rem 2rem;">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}" style="font-size: 1.5rem; font-weight: 200; letter-spacing: -0.02em; color: #ffffff;">
+                hAIpClub
+            </a>
+            
+            <div class="d-flex align-items-center">
+                {% if user.is_authenticated %}
+                    <span class="text-white me-3" style="font-size: 0.9rem; opacity: 0.8;">
+                        {{ user.get_full_name|default:user.username }}
+                    </span>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'core:admin_waitlist' %}" class="btn btn-sm me-2" style="padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50px; color: #ffffff; text-decoration: none; font-size: 0.8rem;">
+                            Admin
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'account_logout' %}" class="btn btn-sm" style="padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50px; color: #ffffff; text-decoration: none; font-size: 0.8rem;">
+                        Sign Out
+                    </a>
+                {% else %}
+                    <a href="{% url 'core:influencer_waitlist' %}" class="btn" style="padding: 0.75rem 2rem; background: linear-gradient(135deg, rgba(33, 150, 243, 0.8) 0%, rgba(156, 39, 176, 0.8) 100%); border: none; border-radius: 50px; color: #ffffff; text-decoration: none; font-weight: 300; font-size: 0.9rem; letter-spacing: 0.01em; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+                        Join Elite Network
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show premium-alert" role="alert">
+                        {% if message.tags == 'success' %}
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                        {% elif message.tags == 'error' %}
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        {% elif message.tags == 'warning' %}
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>
+                        {% else %}
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                        {% endif %}
+                        {{ message }}
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="premium-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="footer-brand">
+                        <h4 class="brand-text">hAIp<span class="brand-accent">Club</span></h4>
+                        <p class="footer-description">
+                            Silicon Valley's most exclusive creator network, connecting top influencers 
+                            with premium brands through AI-powered matching and curated experiences.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-tiktok"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-youtube"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-heading">For Creators</h6>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'core:influencer_waitlist' %}">Join Waitlist</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#success-stories">Success Stories</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-heading">For Brands</h6>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'core:venue_signup' %}">Partner With Us</a></li>
+                        <li><a href="#solutions">Solutions</a></li>
+                        <li><a href="#case-studies">Case Studies</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-heading">Company</h6>
+                    <ul class="footer-links">
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#press">Press</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-heading">Support</h6>
+                    <ul class="footer-links">
+                        <li><a href="#help">Help Center</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#terms">Terms of Service</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="footer-divider">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="footer-copyright">
+                        © 2025 hAIpClub. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="footer-location">
+                        <i class="bi bi-geo-alt-fill me-1"></i>
+                        San Francisco, California
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{% static 'js/custom.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Scroll to top button -->
+    <button id="scrollToTop" class="scroll-to-top" title="Go to top">
+        <i class="bi bi-chevron-up"></i>
+    </button>
+</body>
+</html> 

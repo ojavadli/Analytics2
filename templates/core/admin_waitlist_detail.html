@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}@{{ application.instagram_username }} - Waitlist Detail{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-gold mb-1">
+                        <i class="bi bi-person-circle"></i> @{{ application.instagram_username }}
+                    </h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'core:admin_waitlist' %}">Waitlist</a></li>
+                            <li class="breadcrumb-item active">@{{ application.instagram_username }}</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'core:admin_waitlist' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Status and Actions -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title mb-1">Application Status</h5>
+                                    {% if application.status == 'pending' %}
+                                        <span class="badge bg-warning fs-6">{{ application.get_status_display }}</span>
+                                    {% elif application.status == 'approved' %}
+                                        <span class="badge bg-success fs-6">{{ application.get_status_display }}</span>
+                                    {% elif application.status == 'rejected' %}
+                                        <span class="badge bg-danger fs-6">{{ application.get_status_display }}</span>
+                                    {% elif application.status == 'analyzing' %}
+                                        <span class="badge bg-info fs-6">{{ application.get_status_display }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary fs-6">{{ application.get_status_display }}</span>
+                                    {% endif %}
+                                </div>
+                                {% if application.status == 'pending' %}
+                                <div class="d-flex gap-2">
+                                    <form method="post" action="{% url 'core:approve_waitlist' application.pk %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success" 
+                                                onclick="return confirm('Approve @{{ application.instagram_username }} and create their account?')">
+                                            <i class="bi bi-check-circle"></i> Approve
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                                        <i class="bi bi-x-circle"></i> Reject
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% if application.reviewed_at %}
+                                <small class="text-muted">
+                                    Reviewed on {{ application.reviewed_at|date:"M d, Y g:i A" }}
+                                </small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Applied</h6>
+                            <p class="card-text">{{ application.applied_at|date:"M d, Y g:i A" }}</p>
+                            {% if application.analyzed_at %}
+                                <h6 class="card-title">Analyzed</h6>
+                                <p class="card-text">{{ application.analyzed_at|date:"M d, Y g:i A" }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Basic Information -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-person"></i> Basic Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-4"><strong>Full Name:</strong></div>
+                                <div class="col-sm-8">{{ application.full_name|default:"Not provided" }}</div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-4"><strong>Email:</strong></div>
+                                <div class="col-sm-8">{{ application.email|default:"Not provided" }}</div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-4"><strong>Instagram:</strong></div>
+                                <div class="col-sm-8">
+                                    <a href="https://instagram.com/{{ application.instagram_username }}" target="_blank" class="text-decoration-none">
+                                        @{{ application.instagram_username }} <i class="bi bi-box-arrow-up-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% if application.description %}
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-4"><strong>Bio:</strong></div>
+                                <div class="col-sm-8">{{ application.description|truncatewords:20 }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-graph-up"></i> Key Metrics
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if application.total_followers %}
+                            <div class="row mb-2">
+                                <div class="col-sm-6"><strong>Total Followers:</strong></div>
+                                <div class="col-sm-6">{{ application.total_followers|floatformat:0 }}</div>
+                            </div>
+                            {% endif %}
+                            {% if application.engagement_rate %}
+                            <div class="row mb-2">
+                                <div class="col-sm-6"><strong>Engagement Rate:</strong></div>
+                                <div class="col-sm-6">{{ application.engagement_rate }}%</div>
+                            </div>
+                            {% endif %}
+                            {% if application.average_likes %}
+                            <div class="row mb-2">
+                                <div class="col-sm-6"><strong>Avg Likes:</strong></div>
+                                <div class="col-sm-6">{{ application.average_likes|floatformat:0 }}</div>
+                            </div>
+                            {% endif %}
+                            {% if application.estimated_reach %}
+                            <div class="row mb-2">
+                                <div class="col-sm-6"><strong>Estimated Reach:</strong></div>
+                                <div class="col-sm-6">{{ application.estimated_reach|floatformat:0 }}</div>
+                            </div>
+                            {% endif %}
+                            {% if application.average_posts_per_week %}
+                            <div class="row mb-2">
+                                <div class="col-sm-6"><strong>Posts/Week:</strong></div>
+                                <div class="col-sm-6">{{ application.average_posts_per_week }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analytics -->
+            {% if application.sample_size %}
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-shield-exclamation"></i> Quality Score
+                            </h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="fake-followers-metric">
+                                        <div class="metric-value {% if application.fake_follower_percentage > 15 %}text-danger{% elif application.fake_follower_percentage > 10 %}text-warning{% else %}text-success{% endif %}">
+                                            {{ application.fake_follower_percentage }}%
+                                        </div>
+                                        <div class="metric-label">Fake Followers</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bay-area-metric">
+                                        <div class="metric-value {% if application.bay_area_percentage > 20 %}text-success{% elif application.bay_area_percentage > 10 %}text-warning{% else %}text-danger{% endif %}">
+                                            {{ application.bay_area_percentage }}%
+                                        </div>
+                                        <div class="metric-label">Bay Area Followers</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <small class="text-muted">Sample Size: {{ application.sample_size|floatformat:0 }} followers</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-people"></i> Gender Demographics
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if application.gender_sample_size %}
+                            <div class="progress mb-2" style="height: 25px;">
+                                {% if application.female_percentage %}
+                                <div class="progress-bar bg-pink" role="progressbar" 
+                                     style="width: {{ application.female_percentage }}%" 
+                                     title="Female {{ application.female_percentage }}%">
+                                    {{ application.female_percentage }}%
+                                </div>
+                                {% endif %}
+                                {% if application.male_percentage %}
+                                <div class="progress-bar bg-blue" role="progressbar" 
+                                     style="width: {{ application.male_percentage }}%" 
+                                     title="Male {{ application.male_percentage }}%">
+                                    {{ application.male_percentage }}%
+                                </div>
+                                {% endif %}
+                                {% if application.unknown_percentage %}
+                                <div class="progress-bar bg-secondary" role="progressbar" 
+                                     style="width: {{ application.unknown_percentage }}%" 
+                                     title="Unknown {{ application.unknown_percentage }}%">
+                                    {{ application.unknown_percentage }}%
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small><i class="bi bi-circle-fill text-pink"></i> Female</small>
+                                <small><i class="bi bi-circle-fill text-blue"></i> Male</small>
+                                <small><i class="bi bi-circle-fill text-secondary"></i> Unknown</small>
+                            </div>
+                            <hr>
+                            <small class="text-muted">Gender Sample: {{ application.gender_sample_size|floatformat:0 }} followers</small>
+                            {% else %}
+                            <p class="text-muted text-center">No gender data available</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-geo-alt"></i> Top Bay Area Cities
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if city_percentages %}
+                                {% for city, data in city_percentages.items %}
+                                    {% if forloop.counter <= 5 %}
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>{{ city }}</span>
+                                        <span class="badge bg-primary">{{ data.percentage }}% ({{ data.count }})</span>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                            <p class="text-muted text-center">No location data available</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Admin Notes -->
+            {% if application.admin_notes %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-sticky"></i> Admin Notes
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ application.admin_notes }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <form method="post" action="{% url 'core:reject_waitlist' application.pk %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rejectModalLabel">Reject Application</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to reject <strong>@{{ application.instagram_username }}</strong>?</p>
+                    <div class="mb-3">
+                        <label for="admin_notes" class="form-label">Rejection Reason (Optional)</label>
+                        <textarea class="form-control" id="admin_notes" name="admin_notes" rows="3" 
+                                  placeholder="Enter reason for rejection..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-circle"></i> Reject Application
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.fake-followers-metric, .bay-area-metric {
+    padding: 1rem 0;
+}
+
+.bg-pink {
+    background-color: #e83e8c !important;
+}
+
+.bg-blue {
+    background-color: #007bff !important;
+}
+
+.text-pink {
+    color: #e83e8c !important;
+}
+
+.text-blue {
+    color: #007bff !important;
+}
+
+.progress {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.card-header {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+</style>
+{% endblock %} 

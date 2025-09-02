@@ -1,0 +1,758 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}QR Scanner - hAIpClub Venue{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Mobile-First QR Scanner Design */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  user-select: none;
+}
+
+.scanner-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Header */
+.scanner-header {
+  text-align: center;
+  padding: 1rem 0 2rem;
+}
+
+.scanner-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.scanner-subtitle {
+  color: #cccccc;
+  font-size: 0.9rem;
+}
+
+/* Scanner Section */
+.scanner-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.scanner-frame {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto 2rem;
+  border: 3px solid #FFD700;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.scanner-overlay {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  border: 2px dashed rgba(255, 215, 0, 0.5);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { border-color: rgba(255, 215, 0, 0.3); }
+  50% { border-color: rgba(255, 215, 0, 0.8); }
+  100% { border-color: rgba(255, 215, 0, 0.3); }
+}
+
+.scanner-icon {
+  font-size: 4rem;
+  color: #FFD700;
+  margin-bottom: 1rem;
+}
+
+.scanner-text {
+  color: #cccccc;
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Camera Video */
+#camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 17px;
+}
+
+/* Manual Input */
+.manual-input-section {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.manual-title {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+.input-label {
+  display: block;
+  color: #cccccc;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.input-field {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #FFD700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+.scan-button {
+  width: 100%;
+  padding: 1.2rem;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.scan-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+}
+
+.scan-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Influencer Info Card */
+.influencer-card {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: none;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.influencer-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.influencer-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #000;
+  margin-right: 1rem;
+}
+
+.influencer-info h3 {
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.influencer-handle {
+  color: #FFD700;
+  font-size: 0.9rem;
+}
+
+.influencer-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #FFD700;
+  margin-bottom: 0.3rem;
+}
+
+.stat-label {
+  color: #cccccc;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+/* Redemption Form */
+.redemption-form {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.amount-input-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.amount-prefix {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #FFD700;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.amount-input {
+  width: 100%;
+  padding: 1.2rem 1.2rem 1.2rem 2.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.amount-input:focus {
+  outline: none;
+  border-color: #FFD700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+.redeem-button {
+  width: 100%;
+  padding: 1.2rem;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.redeem-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+}
+
+/* Messages */
+.message {
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.message.success {
+  background: rgba(52, 199, 89, 0.1);
+  border: 1px solid rgba(52, 199, 89, 0.3);
+  color: #34c759;
+}
+
+.message.error {
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  color: #ff3b30;
+}
+
+.message.info {
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.3);
+  color: #007aff;
+}
+
+/* Loading States */
+.loading {
+  position: relative;
+  color: transparent !important;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid currentColor;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .scanner-frame {
+    width: 250px;
+    height: 250px;
+  }
+  
+  .influencer-stats {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+  <!-- Header -->
+  <div class="scanner-header">
+    <h1 class="scanner-title">QR Scanner</h1>
+    <p class="scanner-subtitle">Scan influencer QR codes to process redemptions</p>
+  </div>
+
+  <!-- Messages -->
+  <div id="messages"></div>
+
+  <!-- Scanner Section -->
+  <div class="scanner-section">
+    <div class="scanner-frame">
+      <video id="camera-video" style="display: none;" autoplay playsinline></video>
+      <div class="scanner-overlay" id="scanner-overlay">
+        <div class="scanner-icon">📱</div>
+        <div class="scanner-text">
+          Position the QR code within the frame<br>
+          <small>Camera will activate automatically</small>
+        </div>
+      </div>
+    </div>
+
+    <button class="scan-button" id="start-camera-btn" onclick="startCamera()">
+      📷 Start Camera
+    </button>
+  </div>
+
+  <!-- Manual Input Section -->
+  <div class="manual-input-section">
+    <h3 class="manual-title">Manual QR Code Entry</h3>
+    <div class="input-group">
+      <label class="input-label" for="manual-qr-input">QR Code Token</label>
+      <input type="text" 
+             id="manual-qr-input" 
+             class="input-field" 
+             placeholder="Paste QR code token here"
+             autocomplete="off">
+    </div>
+    <button class="scan-button" onclick="processManualQR()">
+      🔍 Process QR Code
+    </button>
+  </div>
+
+  <!-- Influencer Info Card -->
+  <div class="influencer-card" id="influencer-card">
+    <div class="influencer-header">
+      <div class="influencer-avatar" id="influencer-avatar">?</div>
+      <div class="influencer-info">
+        <h3 id="influencer-name">Loading...</h3>
+        <div class="influencer-handle" id="influencer-handle">@loading</div>
+      </div>
+    </div>
+
+    <div class="influencer-stats">
+      <div class="stat-item">
+        <div class="stat-value" id="influencer-balance">$0</div>
+        <div class="stat-label">Available Credit</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="influencer-tier">Bronze</div>
+        <div class="stat-label">Tier Level</div>
+      </div>
+    </div>
+
+    <!-- Redemption Form -->
+    <div class="redemption-form">
+      <div class="amount-input-group">
+        <div class="amount-prefix">$</div>
+        <input type="number" 
+               id="redemption-amount" 
+               class="amount-input" 
+               placeholder="0.00" 
+               step="0.01" 
+               min="0.01" 
+               max="500.00">
+      </div>
+      <button class="redeem-button" onclick="processRedemption()">
+        💳 Process Redemption
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+let currentStream = null;
+let currentInfluencer = null;
+let isScanning = false;
+
+// DOM Elements
+const video = document.getElementById('camera-video');
+const overlay = document.getElementById('scanner-overlay');
+const startCameraBtn = document.getElementById('start-camera-btn');
+const influencerCard = document.getElementById('influencer-card');
+const messagesDiv = document.getElementById('messages');
+
+// Start Camera
+async function startCamera() {
+  try {
+    startCameraBtn.classList.add('loading');
+    startCameraBtn.disabled = true;
+    
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { 
+        facingMode: 'environment',
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
+    });
+    
+    currentStream = stream;
+    video.srcObject = stream;
+    video.style.display = 'block';
+    overlay.style.display = 'none';
+    startCameraBtn.style.display = 'none';
+    
+    // Start scanning
+    isScanning = true;
+    scanQRCode();
+    
+  } catch (error) {
+    showMessage('Camera access denied or not available', 'error');
+    startCameraBtn.classList.remove('loading');
+    startCameraBtn.disabled = false;
+  }
+}
+
+// Stop Camera
+function stopCamera() {
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
+    currentStream = null;
+  }
+  
+  video.style.display = 'none';
+  overlay.style.display = 'flex';
+  startCameraBtn.style.display = 'block';
+  startCameraBtn.classList.remove('loading');
+  startCameraBtn.disabled = false;
+  isScanning = false;
+}
+
+// Scan QR Code from Camera
+function scanQRCode() {
+  if (!isScanning || !video.videoWidth) {
+    if (isScanning) {
+      requestAnimationFrame(scanQRCode);
+    }
+    return;
+  }
+  
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+  
+  const code = jsQR(imageData.data, imageData.width, imageData.height);
+  
+  if (code) {
+    processQRCode(code.data);
+  } else {
+    requestAnimationFrame(scanQRCode);
+  }
+}
+
+// Process Manual QR
+function processManualQR() {
+  const qrInput = document.getElementById('manual-qr-input');
+  const qrData = qrInput.value.trim();
+  
+  if (!qrData) {
+    showMessage('Please enter a QR code token', 'error');
+    return;
+  }
+  
+  processQRCode(qrData);
+}
+
+// Process QR Code
+async function processQRCode(qrData) {
+  try {
+    // Stop scanning temporarily
+    const wasScanning = isScanning;
+    isScanning = false;
+    
+    showMessage('Processing QR code...', 'info');
+    
+    // Extract token from QR data (could be JSON or just the token)
+    let token = qrData;
+    try {
+      const parsed = JSON.parse(qrData);
+      token = parsed.token || parsed.qr_token || qrData;
+    } catch (e) {
+      // Not JSON, use as is
+    }
+    
+    const response = await fetch('{% url "core:scan_qr_code" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({ qr_token: token })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      displayInfluencerInfo(data.influencer, token);
+      showMessage('QR code scanned successfully!', 'success');
+      stopCamera();
+    } else {
+      showMessage(data.error || 'Invalid QR code', 'error');
+      if (wasScanning) {
+        isScanning = true;
+        requestAnimationFrame(scanQRCode);
+      }
+    }
+    
+  } catch (error) {
+    showMessage('Error processing QR code', 'error');
+    console.error('QR processing error:', error);
+  }
+}
+
+// Display Influencer Info
+function displayInfluencerInfo(influencer, token) {
+  currentInfluencer = { ...influencer, qr_token: token };
+  
+  document.getElementById('influencer-avatar').textContent = 
+    influencer.username.charAt(0).toUpperCase();
+  document.getElementById('influencer-name').textContent = influencer.username;
+  document.getElementById('influencer-handle').textContent = '@' + influencer.instagram_username;
+  document.getElementById('influencer-balance').textContent = '$' + influencer.current_balance.toFixed(0);
+  document.getElementById('influencer-tier').textContent = influencer.tier;
+  
+  // Set tier color
+  const avatar = document.getElementById('influencer-avatar');
+  const tierColors = {
+    'Bronze Member': '#CD7F32',
+    'Silver Member': '#C0C0C0',
+    'Gold Member': '#FFD700',
+    'Elite SF Member': '#FF6B35'
+  };
+  avatar.style.background = `linear-gradient(135deg, ${tierColors[influencer.tier] || '#FFD700'}, #FFA500)`;
+  
+  influencerCard.style.display = 'block';
+  
+  // Clear manual input
+  document.getElementById('manual-qr-input').value = '';
+}
+
+// Process Redemption
+async function processRedemption() {
+  if (!currentInfluencer) {
+    showMessage('No influencer selected', 'error');
+    return;
+  }
+  
+  const amountInput = document.getElementById('redemption-amount');
+  const amount = parseFloat(amountInput.value);
+  
+  if (!amount || amount <= 0) {
+    showMessage('Please enter a valid amount', 'error');
+    return;
+  }
+  
+  if (amount > currentInfluencer.current_balance) {
+    showMessage(`Insufficient balance. Available: $${currentInfluencer.current_balance.toFixed(2)}`, 'error');
+    return;
+  }
+  
+  try {
+    const redeemBtn = document.querySelector('.redeem-button');
+    redeemBtn.classList.add('loading');
+    redeemBtn.disabled = true;
+    
+    const response = await fetch('{% url "core:process_redemption" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({
+        influencer_id: currentInfluencer.id,
+        amount: amount,
+        qr_token: currentInfluencer.qr_token
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      showMessage(data.message, 'success');
+      
+      // Update balance display
+      currentInfluencer.current_balance = data.new_balance;
+      document.getElementById('influencer-balance').textContent = '$' + data.new_balance.toFixed(0);
+      
+      // Clear amount
+      amountInput.value = '';
+      
+      // Hide card after 3 seconds
+      setTimeout(() => {
+        influencerCard.style.display = 'none';
+        currentInfluencer = null;
+      }, 3000);
+      
+    } else {
+      showMessage(data.error || 'Redemption failed', 'error');
+    }
+    
+  } catch (error) {
+    showMessage('Error processing redemption', 'error');
+    console.error('Redemption error:', error);
+  } finally {
+    const redeemBtn = document.querySelector('.redeem-button');
+    redeemBtn.classList.remove('loading');
+    redeemBtn.disabled = false;
+  }
+}
+
+// Show Message
+function showMessage(text, type = 'info') {
+  const messageEl = document.createElement('div');
+  messageEl.className = `message ${type}`;
+  messageEl.textContent = text;
+  
+  messagesDiv.appendChild(messageEl);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    if (messageEl.parentNode) {
+      messageEl.parentNode.removeChild(messageEl);
+    }
+  }, 5000);
+}
+
+// Get CSRF Cookie
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+  stopCamera();
+});
+</script>
+{% endblock %} 
